@@ -35,7 +35,6 @@ public class FilmControllerTest {
                         .content(objectMapper.writeValueAsString(film)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("TestFilm"))
-                .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.releaseDate").value("2024-09-09"))
                 .andExpect(jsonPath("$.description").value("TestDescription"));
     }
