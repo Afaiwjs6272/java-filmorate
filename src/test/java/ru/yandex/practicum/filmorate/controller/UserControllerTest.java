@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,34 +46,40 @@ public class UserControllerTest {
     @Test
     public void testCreate() throws Exception {
         User user = new User();
-        user.setName("John Doe");
+        user.setName("JohnDoe");
+        user.setBirthday(LocalDate.of(2000,12,11));
+        user.setEmail("aasw@mail.ru");
+        user.setLogin("assd");
 
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("John Doe"))
+                .andExpect(jsonPath("$.name").value("JohnDoe"))
                 .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
     public void testUpdate() throws Exception {
         User user = new User();
+        user.setName("JohnDoe");
         user.setId(1L);
-        user.setName("John Doe");
+        user.setBirthday(LocalDate.of(2000,12,11));
+        user.setEmail("aasw@mail.ru");
+        user.setLogin("assd");
 
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk());
 
-        user.setName("Jane Doe");
+        user.setName("JaneDoe");
 
         mockMvc.perform(put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Jane Doe"))
+                .andExpect(jsonPath("$.name").value("JaneDoe"))
                 .andDo(MockMvcResultHandlers.print());
     }
 }
