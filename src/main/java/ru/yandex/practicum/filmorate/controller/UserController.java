@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,9 +23,15 @@ public class UserController {
 
     @PostMapping
     public User create(@RequestBody User user) {
+        if (user.getLogin().contains(" ")) {
+            throw new ValidationException("Логин не должен содержать пробелов");
+        }
+        if (user.getBirthday().isAfter(LocalDate.now())) {
+            throw new ValidationException("День рождения не может быть в будущем");
+        }
         user.setId(getNextId());
-        users.put(user.getId(), user);
-        log.info("User {} created" + user.getId());
+        users.put(user.getId(),user);
+        log.info("User {} created " + user.getId());
         return user;
     }
 
