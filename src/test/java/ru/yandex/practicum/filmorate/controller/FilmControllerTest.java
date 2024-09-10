@@ -56,7 +56,8 @@ public class FilmControllerTest {
         Film updatedFilm = new Film();
         updatedFilm.setId(1L);
         updatedFilm.setName("UpdatedFilm");
-        updatedFilm.setReleaseDate(LocalDate.of(2024, 9, 10));
+        updatedFilm.setDuration(11);
+        updatedFilm.setReleaseDate(LocalDate.of(2024, 9, 8));
         updatedFilm.setDescription("UpdatedDescription");
 
         mockMvc.perform(put("/films")
@@ -64,7 +65,7 @@ public class FilmControllerTest {
                         .content(objectMapper.writeValueAsString(updatedFilm)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("UpdatedFilm"))
-                .andExpect(jsonPath("$.releaseDate").value("2024-09-10"))
+                .andExpect(jsonPath("$.releaseDate").value("2024-09-08"))
                 .andExpect(jsonPath("$.description").value("UpdatedDescription"));
     }
 
@@ -81,7 +82,7 @@ public class FilmControllerTest {
         film2.setId(2L);
         film2.setName("Film2");
         film2.setDuration(19);
-        film2.setReleaseDate(LocalDate.of(2024, 9, 10));
+        film2.setReleaseDate(LocalDate.of(2024, 9, 7));
         film2.setDescription("Description2");
 
         mockMvc.perform(post("/films")

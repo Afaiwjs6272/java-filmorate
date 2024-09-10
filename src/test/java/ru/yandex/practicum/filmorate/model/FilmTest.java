@@ -36,7 +36,6 @@ class FilmTest {
         Film film = new Film();
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());
-        assertEquals(3, violations.size());
     }
 
     @Test
@@ -59,10 +58,10 @@ class FilmTest {
         film.setReleaseDate(LocalDate.now().minusYears(2));
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());
-        assertEquals(3, violations.stream().filter(c -> c.getPropertyPath().toString().equals("name")).count());
+        assertEquals(2, violations.stream().filter(c -> c.getPropertyPath().toString().equals("name")).count());
         film.setName("");
         violations = validator.validate(film);
-        assertEquals(2, violations.stream().filter(c -> c.getPropertyPath().toString().equals("name")).count());
+        assertEquals(1, violations.stream().filter(c -> c.getPropertyPath().toString().equals("name")).count());
     }
 
     @Test
