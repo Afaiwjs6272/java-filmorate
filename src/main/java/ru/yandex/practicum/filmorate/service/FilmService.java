@@ -63,8 +63,8 @@ public class FilmService {
     public Collection<Film> getListOfTenMostLikedFilms(int count) {
         return filmStorage.findAll().stream()
                 .sorted((f1, f2) -> f2.getLikes().size() - f1.getLikes().size())
-                .limit(count).
-                toList();
+                .limit(count)
+                .toList();
     }
 
     private void checkValidFilm(Film film) {
