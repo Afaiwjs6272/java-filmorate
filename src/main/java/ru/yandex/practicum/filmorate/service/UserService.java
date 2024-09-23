@@ -21,6 +21,9 @@ public class UserService {
     }
 
     public User getUser(Long id) {
+        if (userStorage.getUser(id) == null) {
+            throw new NotFoundException("Юзер с id " + id + " не найден");
+        }
         return userStorage.getUser(id);
     }
 
@@ -43,8 +46,6 @@ public class UserService {
         checkValidUser(friend);
         user.getFriends().add(friendId);
         friend.getFriends().add(userId);
-        userStorage.update(user);
-        userStorage.update(friend);
         log.info("User {} add friend {}", userId, friendId);
         return user;
     }
@@ -56,8 +57,6 @@ public class UserService {
         checkValidUser(friend);
         user.getFriends().remove(friendId);
         friend.getFriends().remove(userId);
-        userStorage.update(user);
-        userStorage.update(friend);
         log.info("User {} delete friend {}", userId, friendId);
         return user;
     }

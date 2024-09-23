@@ -19,6 +19,9 @@ public class FilmService {
     private final UserStorage userStorage;
 
     public Film getFIlm(Long id) {
+        if (filmStorage.getFilm(id) == null) {
+         throw new NotFoundException("Фильм с id " + id + " не найден");
+        }
         return filmStorage.getFilm(id);
     }
 
@@ -44,7 +47,6 @@ public class FilmService {
         checkValidFilm(film);
         checkValidUser(user);
         film.getLikes().add(userId);
-        filmStorage.update(film);
         log.info("User {} liked Film {}", userId, filmId);
         return film;
     }
@@ -55,7 +57,6 @@ public class FilmService {
         checkValidFilm(film);
         checkValidUser(user);
         film.getLikes().remove(userId);
-        filmStorage.update(film);
         log.info("User {} remove like on Film {}", userId, filmId);
         return film;
     }
