@@ -1,82 +1,59 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Collection;
+import java.util.Comparator;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
 public class FilmService {
-    private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
 
-    public Film getFIlm(Long id) {
-        if (filmStorage.getFilm(id) == null) {
-         throw new NotFoundException("Фильм с id " + id + " не найден");
-        }
+    private final FilmStorage filmStorage;
+
+    public FilmService(@Autowired @Qualifier("FilmRepository") FilmStorage filmStorage) {
+        this.filmStorage = filmStorage;
+    }
+
+    public Film getFilm(Long id) {
         return filmStorage.getFilm(id);
     }
 
-    public Film deleteFilm(Long id) {
-        return filmStorage.deleteFilm(id);
+    public Collection<Film> getFilms() {
+        return filmStorage.findAll();
     }
 
-    public Film createFilm(Film film) {
+    public Film addFilm(Film film) {
         return filmStorage.create(film);
     }
 
     public Film updateFilm(Film film) {
+        checkFilmExist(filmStorage.getFilm(film.getId()));
         return filmStorage.update(film);
     }
 
-    public Collection<Film> findAllFilms() {
-        return filmStorage.findAll();
+    public void addLike(Long filmId, Long userId) {
+        filmStorage.addLike(filmId, userId);
     }
 
-    public Film likeFilm(Long filmId, Long userId) {
-        Film film = filmStorage.getFilm(filmId);
-        User user = userStorage.getUser(userId);
-        checkValidFilm(film);
-        checkValidUser(user);
-        film.getLikes().add(userId);
-        log.info("User {} liked Film {}", userId, filmId);
-        return film;
+    public void removeLike(Long filmId, Long userId) {
+        filmStorage.removeLike(filmId, userId);
     }
 
-    public Film removeLike(Long filmId, Long userId) {
-        Film film = filmStorage.getFilm(filmId);
-        User user = userStorage.getUser(userId);
-        checkValidFilm(film);
-        checkValidUser(user);
-        film.getLikes().remove(userId);
-        log.info("User {} remove like on Film {}", userId, filmId);
-        return film;
+
+    public Collection<Film> getTopFilms(int count) {
+        return filmStorage.findAll().stream().sorted(Comparator.comparing(f -> f.getLikes().size(), Comparator.reverseOrder())).limit(count).toList();
     }
 
-    public Collection<Film> getListOfTenMostLikedFilms(int count) {
-        return filmStorage.findAll().stream()
-                .sorted((f1, f2) -> f2.getLikes().size() - f1.getLikes().size())
-                .limit(count)
-                .toList();
-    }
-
-    private void checkValidFilm(Film film) {
+    public void checkFilmExist(Film film) {
         if (film == null) {
-            throw new NotFoundException("Фильм не может быть null");
-        }
-    }
-
-    private void checkValidUser(User user) {
-        if (user == null) {
-            throw new NotFoundException("Юзер не может быть null");
+            throw new NotFoundException("Film not found");
         }
     }
 }
