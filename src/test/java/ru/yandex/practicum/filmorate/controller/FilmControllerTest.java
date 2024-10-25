@@ -37,7 +37,7 @@ public class FilmControllerTest {
     }
 
     @Test
-    void CreateNullReleaseDateFilm() {
+    void createNullReleaseDateFilm() {
         Film film = new Film();
         film.setName("Test Film");
         film.setDescription("O".repeat(300));
