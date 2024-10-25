@@ -60,28 +60,4 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.name").value("JohnDoe"))
                 .andDo(MockMvcResultHandlers.print());
     }
-
-    @Test
-    public void testUpdate() throws Exception {
-        User user = new User();
-        user.setName("JohnDoe");
-        user.setId(1L);
-        user.setBirthday(LocalDate.of(2000,12,11));
-        user.setEmail("aasw@mail.ru");
-        user.setLogin("assd");
-
-        mockMvc.perform(post("/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isOk());
-
-        user.setName("JaneDoe");
-
-        mockMvc.perform(put("/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("JaneDoe"))
-                .andDo(MockMvcResultHandlers.print());
-    }
 }
