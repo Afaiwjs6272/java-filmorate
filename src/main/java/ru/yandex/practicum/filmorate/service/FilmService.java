@@ -17,7 +17,7 @@ public class FilmService {
 
     private final FilmStorage filmStorage;
 
-    public FilmService(@Autowired @Qualifier("FilmRepository") FilmStorage filmStorage) {
+    public FilmService(@Qualifier("FilmRepository") FilmStorage filmStorage) {
         this.filmStorage = filmStorage;
     }
 
@@ -48,11 +48,17 @@ public class FilmService {
 
 
     public Collection<Film> getTopFilms(int count) {
-        return filmStorage.findAll().stream().sorted(Comparator.comparing(f -> f.getLikes().size(), Comparator.reverseOrder())).limit(count).toList();
+        return filmStorage
+                .findAll()
+                .stream()
+                .sorted(Comparator.comparing(f -> f.getLikes().size(), Comparator.reverseOrder()))
+                .limit(count)
+                .toList();
     }
 
     public void checkFilmExist(Film film) {
         if (film == null) {
+            log.error("Film not exists {}", film.getId());
             throw new NotFoundException("Film not found");
         }
     }

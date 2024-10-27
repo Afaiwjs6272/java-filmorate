@@ -15,7 +15,7 @@ import java.util.Collection;
 public class UserService {
     private final UserStorage userStorage;
 
-    public UserService(@Autowired @Qualifier("UserRepository") UserStorage userStorage) {
+    public UserService(@Qualifier("UserRepository") UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
@@ -60,6 +60,7 @@ public class UserService {
 
     private void checkIfUserExists(User user) {
         if (user == null) {
+            log.error("User with {} id not found", user.getId());
             throw new NotFoundException("User not found");
         }
     }

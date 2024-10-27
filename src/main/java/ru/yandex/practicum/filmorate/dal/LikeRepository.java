@@ -44,6 +44,4 @@ public class LikeRepository extends BaseRepository<Like> {
         update(DELETE_QUERY, filmId, userId);
         log.info("Removed like from film = {} by user = {}", filmId, userId);
     }
-
-
 }
