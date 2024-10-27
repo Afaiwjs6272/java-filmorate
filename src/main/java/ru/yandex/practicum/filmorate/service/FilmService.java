@@ -57,7 +57,7 @@ public class FilmService {
 
     public void checkFilmExist(Film film) {
         if (film == null) {
-            log.error("Film not exists {}", film.getId());
+            log.warn("Film not exists {}", film.getId());
             throw new NotFoundException("Film not found");
         }
     }

@@ -59,7 +59,6 @@ public class UserService {
 
     private void checkIfUserExists(User user) {
         if (user == null) {
-            log.error("User with {} id not found", user.getId());
             throw new NotFoundException("User not found");
         }
     }

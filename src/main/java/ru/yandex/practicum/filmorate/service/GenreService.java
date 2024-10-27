@@ -19,7 +19,7 @@ public class GenreService {
     public Genre findById(Long id) {
         Genre mpa = genreRepository.findById(id);
         if (mpa == null) {
-            log.error("Genre not found {}", id);
+            log.warn("Genre not found {}", id);
             throw new NotFoundException("Genre not found");
         }
         return mpa;

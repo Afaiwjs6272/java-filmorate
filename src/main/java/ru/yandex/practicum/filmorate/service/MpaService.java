@@ -19,7 +19,7 @@ public class MpaService {
     public Mpa findById(Long id) {
         Mpa mpa = mpaRepository.findById(id);
         if (mpa == null) {
-            log.error("Mpa with {} id not found", id);
+            log.warn("Mpa with {} id not found", id);
             throw new NotFoundException("Mpa not found");
         }
         return mpa;
