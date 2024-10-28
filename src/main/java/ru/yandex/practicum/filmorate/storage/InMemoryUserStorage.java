@@ -11,9 +11,9 @@ import java.util.Collection;
 import java.util.HashMap;
 
 @Slf4j
-@Component
+@Component("memoryUser")
 public class InMemoryUserStorage implements UserStorage {
-    private HashMap<Long, User> users = new HashMap<>();
+    private final HashMap<Long, User> users = new HashMap<>();
 
     @Override
     public Collection<User> findAll() {
@@ -46,9 +46,29 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User deleteUser(Long id) {
+    public void deleteUser(Long id) {
         log.info("User {} deleted",id);
-        return users.remove(id);
+        users.remove(id);
+    }
+
+    @Override
+    public void addFriend(Long userId, Long friendId) {
+
+    }
+
+    @Override
+    public void removeFriend(Long userId, Long friendId) {
+
+    }
+
+    @Override
+    public Collection<User> getUserFriends(Long userId) {
+        return null;
+    }
+
+    @Override
+    public Collection<User> getCommonFriends(Long userId, Long friendId) {
+        return null;
     }
 
     private void validateUserName(User user) {

@@ -12,9 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-@Component
+@Component("memoryFilm")
 public class InMemoryFilmStorage implements FilmStorage {
-    Map<Long, Film> films = new HashMap<>();
+   private final Map<Long, Film> films = new HashMap<>();
 
     @Override
     public Collection<Film> findAll() {
@@ -40,14 +40,30 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public void addLike(Long filmId, Long userId) {
+        Film film = getFilm(filmId);
+        film.getLikes().add(userId);
+        update(film);
+        log.info("User = {} like film = {}",userId,filmId);
+    }
+
+    @Override
+    public void removeLike(Long filmId, Long userId) {
+        Film film = getFilm(filmId);
+        film.getLikes().remove(userId);
+        update(film);
+        log.info("User = {} remove like from film = {}",userId,filmId);
+    }
+
+    @Override
     public Film getFilm(Long id) {
         return films.get(id);
     }
 
     @Override
-    public Film deleteFilm(Long id) {
+    public void deleteFilm(Long id) {
         log.info("Film {} removed", id);
-        return films.remove(id);
+        films.remove(id);
     }
 
     private long getNextId() {

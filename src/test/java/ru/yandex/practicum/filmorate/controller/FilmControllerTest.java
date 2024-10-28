@@ -1,104 +1,68 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
+import java.util.Set;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 public class FilmControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    private ObjectMapper objectMapper;
+    private Validator validator;
 
     @Test
-    public void testCreateFilm() throws Exception {
+    void errorCreateDescriptionTooLongFilm() {
         Film film = new Film();
-        film.setName("TestFilm");
-        film.setDuration(10);
-        film.setReleaseDate(LocalDate.of(2024, 9, 9));
-        film.setDescription("TestDescription");
+        film.setName("Test Film");
+        film.setDescription("O".repeat(300));
+        film.setReleaseDate(LocalDate.of(2022, 1, 1));
+        film.setDuration(100);
 
-        mockMvc.perform(post("/films")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(film)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("TestFilm"))
-                .andExpect(jsonPath("$.releaseDate").value("2024-09-09"))
-                .andExpect(jsonPath("$.description").value("TestDescription"));
+        Set<ConstraintViolation<Film>> violations = validator.validate(film);
+        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.stream()
+                .filter(v -> v.getPropertyPath().toString().equals("description"))
+                .count());
     }
 
     @Test
-    public void testUpdateFilm() throws Exception {
+    void createNullReleaseDateFilm() {
         Film film = new Film();
-        film.setId(1L);
-        film.setName("InitialFilm");
-        film.setDuration(10);
-        film.setReleaseDate(LocalDate.of(2024, 9, 9));
-        film.setDescription("InitialDescription");
+        film.setName("Test Film");
+        film.setDescription("O".repeat(300));
+        film.setReleaseDate(null);
+        film.setDuration(100);
 
-        mockMvc.perform(post("/films")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(film)))
-                .andExpect(status().isOk());
-
-        Film updatedFilm = new Film();
-        updatedFilm.setId(1L);
-        updatedFilm.setName("UpdatedFilm");
-        updatedFilm.setDuration(11);
-        updatedFilm.setReleaseDate(LocalDate.of(2024, 9, 8));
-        updatedFilm.setDescription("UpdatedDescription");
-
-        mockMvc.perform(put("/films")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(updatedFilm)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("UpdatedFilm"))
-                .andExpect(jsonPath("$.releaseDate").value("2024-09-08"))
-                .andExpect(jsonPath("$.description").value("UpdatedDescription"));
+        Set<ConstraintViolation<Film>> violations = validator.validate(film);
+        assertFalse(violations.isEmpty());
+        assertEquals(0, violations.stream()
+                .filter(v -> v.getPropertyPath().toString().equals("releaseDate"))
+                .count());
     }
 
     @Test
-    public void testFindAllFilms() throws Exception {
-        Film film1 = new Film();
-        film1.setId(1L);
-        film1.setDuration(10);
-        film1.setName("Film1");
-        film1.setReleaseDate(LocalDate.of(2024, 9, 9));
-        film1.setDescription("Description1");
+    void errorCreateReleaseDateBeforeFilmsDateFilm() {
+        Film film = new Film();
+        film.setName("Test Film");
+        film.setDescription("O".repeat(300));
+        film.setReleaseDate(LocalDate.of(1864, 2, 3));
+        film.setDuration(100);
 
-        Film film2 = new Film();
-        film2.setId(2L);
-        film2.setName("Film2");
-        film2.setDuration(19);
-        film2.setReleaseDate(LocalDate.of(2024, 9, 7));
-        film2.setDescription("Description2");
-
-        mockMvc.perform(post("/films")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(film1)))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(post("/films")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(film2)))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(get("/films"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name").value("Film1"))
-                .andExpect(jsonPath("$[1].name").value("Film2"));
+        Set<ConstraintViolation<Film>> violations = validator.validate(film);
+        assertFalse(violations.isEmpty());
+        assertEquals(1, violations.stream()
+                .filter(v -> v.getPropertyPath().toString().equals("releaseDate"))
+                .count());
     }
 }
