@@ -24,7 +24,7 @@ public class UserService {
 
     public User getUser(Long id) {
         User user = userStorage.getUser(id);
-        checkIfUserExists(user);
+        checkIfUserExists(user, id);
         return user;
     }
 
@@ -37,19 +37,19 @@ public class UserService {
     }
 
     public void addFriend(Long userId, Long friendId) {
-        checkIfUserExists(userStorage.getUser(userId));
-        checkIfUserExists(userStorage.getUser(friendId));
+        checkIfUserExists(userStorage.getUser(userId), userId);
+        checkIfUserExists(userStorage.getUser(friendId), friendId);
         userStorage.addFriend(userId, friendId);
     }
 
     public void removeFriend(Long userId, Long friendId) {
-        checkIfUserExists(userStorage.getUser(userId));
-        checkIfUserExists(userStorage.getUser(friendId));
+        checkIfUserExists(userStorage.getUser(userId), userId);
+        checkIfUserExists(userStorage.getUser(friendId), friendId);
         userStorage.removeFriend(userId, friendId);
     }
 
     public Collection<User> listOfFriends(Long userId) {
-        checkIfUserExists(userStorage.getUser(userId));
+        checkIfUserExists(userStorage.getUser(userId), userId);
         return userStorage.getUserFriends(userId);
     }
 
@@ -57,8 +57,9 @@ public class UserService {
         return userStorage.getCommonFriends(userId, friendId);
     }
 
-    private void checkIfUserExists(User user) {
+    private void checkIfUserExists(User user, Long id) {
         if (user == null) {
+            log.warn("User with {} id not found", id);
             throw new NotFoundException("User not found");
         }
     }

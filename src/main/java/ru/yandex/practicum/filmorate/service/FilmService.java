@@ -32,8 +32,8 @@ public class FilmService {
         return filmStorage.create(film);
     }
 
-    public Film updateFilm(Film film) {
-        checkFilmExist(filmStorage.getFilm(film.getId()));
+    public Film updateFilm(Film film, Long id) {
+        checkFilmExist(filmStorage.getFilm(film.getId()), id);
         return filmStorage.update(film);
     }
 
@@ -55,9 +55,9 @@ public class FilmService {
                 .toList();
     }
 
-    public void checkFilmExist(Film film) {
+    public void checkFilmExist(Film film, Long id) {
         if (film == null) {
-            log.warn("Film not exists {}", film.getId());
+            log.warn("Film not exists {}", id);
             throw new NotFoundException("Film not found");
         }
     }
